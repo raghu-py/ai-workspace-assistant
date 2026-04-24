@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1>Assistant</h1>
+    <p>Ask questions, create tasks, search the workspace, and connect external MCP tools.</p>
+  </div>
+  <div class="badge {% if assistant_enabled %}badge-success{% else %}badge-warning{% endif %}">
+    {% if assistant_enabled %}AI provider configured{% else %}Fallback mode{% endif %}
+  </div>
+</section>
+
+<section class="grid grid-2">
+  <div class="card">
+    <h2>Chat</h2>
+    <form method="post" class="stack">
+      <textarea name="message" rows="6" placeholder="Try: create task: Prepare release checklist" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+    <p class="muted">Fallback commands: <code>create task: ...</code>, <code>create note: title | content</code>, or <code>search ...</code>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Conversation</h2>
+    <div class="stack list-stack assistant-history">
+      {% for item in history %}
+      <article class="list-item message {{ item['role'] }}">
+        <strong>{{ item['role'].title() }}</strong>
+        <p>{{ item['content'] }}</p>
+        <small>{{ item['created_at'] }}</small>
+      </article>
+      {% else %}
+      <p>No messages yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
