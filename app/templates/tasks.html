@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1>Tasks</h1>
+    <p>Track daily work with status, priority, and due dates.</p>
+  </div>
+</section>
+
+<section class="grid grid-2">
+  <div class="card">
+    <h2>{% if editing_task %}Edit task{% else %}New task{% endif %}</h2>
+    <form method="post" action="{% if editing_task %}/tasks/{{ editing_task['id'] }}/edit{% else %}/tasks{% endif %}" class="stack">
+      <label>Title<input type="text" name="title" value="{{ editing_task['title'] if editing_task else '' }}" required /></label>
+      <label>Description<textarea name="description" rows="6">{{ editing_task['description'] if editing_task else '' }}</textarea></label>
+      <div class="grid grid-3">
+        <label>Status
+          <select name="status">
+            {% set selected_status = editing_task['status'] if editing_task else 'todo' %}
+            <option value="todo" {% if selected_status == 'todo' %}selected{% endif %}>Todo</option>
+            <option value="in_progress" {% if selected_status == 'in_progress' %}selected{% endif %}>In progress</option>
+            <option value="done" {% if selected_status == 'done' %}selected{% endif %}>Done</option>
+          </select>
+        </label>
+        <label>Priority
+          {% set selected_priority = editing_task['priority'] if editing_task else 'medium' %}
+          <select name="priority">
+            <option value="low" {% if selected_priority == 'low' %}selected{% endif %}>Low</option>
+            <option value="medium" {% if selected_priority == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="high" {% if selected_priority == 'high' %}selected{% endif %}>High</option>
+          </select>
+        </label>
+        <label>Due date<input type="date" name="due_date" value="{{ editing_task['due_date'] if editing_task and editing_task['due_date'] else '' }}" /></label>
+      </div>
+      <div class="actions">
+        <button type="submit">{% if editing_task %}Update task{% else %}Create task{% endif %}</button>
+        {% if editing_task %}<a class="button secondary" href="/tasks">Cancel</a>{% endif %}
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <form method="get" action="/tasks" class="search-row compact-gap wrap">
+      <input type="text" name="q" value="{{ q }}" placeholder="Search tasks" />
+      <select name="status">
+        <option value="" {% if not status %}selected{% endif %}>All statuses</option>
+        <option value="todo" {% if status == 'todo' %}selected{% endif %}>Todo</option>
+        <option value="in_progress" {% if status == 'in_progress' %}selected{% endif %}>In progress</option>
+        <option value="done" {% if status == 'done' %}selected{% endif %}>Done</option>
+      </select>
+      <button type="submit">Filter</button>
+    </form>
+
+    <div class="stack list-stack top-gap">
+      {% for task in tasks %}
+      <article class="list-item">
+        <div class="section-title">
+          <strong>{{ task['title'] }}</strong>
+          <div class="actions tiny-actions">
+            <a href="/tasks/{{ task['id'] }}/edit">Edit</a>
+            <form action="/tasks/{{ task['id'] }}/delete" method="post" class="inline-form">
+              <button type="submit" class="ghost danger">Delete</button>
+            </form>
+          </div>
+        </div>
+        <p>{{ task['description'] or 'No description' }}</p>
+        <small>{{ task['status'] }} · {{ task['priority'] }}{% if task['due_date'] %} · due {{ task['due_date'] }}{% endif %}</small>
+      </article>
+      {% else %}
+      <p>No tasks found.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
