@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Run your workspace from one FastAPI app.</h1>
+    <p>
+      Manage notes, tasks, searchable uploads, and an AI assistant with optional MCP tool integration.
+      Built for real daily use, not just a demo.
+    </p>
+    <div class="actions">
+      <a class="button" href="/register">Create account</a>
+      <a class="button secondary" href="/login">Sign in</a>
+    </div>
+  </div>
+  <div class="card stack">
+    <h3>What’s included</h3>
+    <ul>
+      <li>Secure login and registration</li>
+      <li>Notes and task management</li>
+      <li>Upload and search text files</li>
+      <li>AI assistant with tool calling</li>
+      <li>Optional MCP server support</li>
+      <li>REST API + web UI + Docker</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}
