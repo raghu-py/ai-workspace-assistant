@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1>Notes</h1>
+    <p>Capture decisions, plans, and research in one searchable place.</p>
+  </div>
+</section>
+
+<section class="grid grid-2">
+  <div class="card">
+    <h2>{% if editing_note %}Edit note{% else %}New note{% endif %}</h2>
+    <form method="post" action="{% if editing_note %}/notes/{{ editing_note['id'] }}/edit{% else %}/notes{% endif %}" class="stack">
+      <label>Title<input type="text" name="title" value="{{ editing_note['title'] if editing_note else '' }}" required /></label>
+      <label>Tags<input type="text" name="tags" value="{{ editing_note['tags'] if editing_note else '' }}" placeholder="planning, roadmap, release" /></label>
+      <label>Content<textarea name="content" rows="10" required>{{ editing_note['content'] if editing_note else '' }}</textarea></label>
+      <div class="actions">
+        <button type="submit">{% if editing_note %}Update note{% else %}Create note{% endif %}</button>
+        {% if editing_note %}<a class="button secondary" href="/notes">Cancel</a>{% endif %}
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <form method="get" action="/notes" class="search-row compact-gap">
+      <input type="text" name="q" value="{{ q }}" placeholder="Search notes" />
+      <button type="submit">Search</button>
+    </form>
+    <div class="stack list-stack top-gap">
+      {% for note in notes %}
+      <article class="list-item">
+        <div class="section-title">
+          <strong>{{ note['title'] }}</strong>
+          <div class="actions tiny-actions">
+            <a href="/notes/{{ note['id'] }}/edit">Edit</a>
+            <form action="/notes/{{ note['id'] }}/delete" method="post" class="inline-form">
+              <button type="submit" class="ghost danger">Delete</button>
+            </form>
+          </div>
+        </div>
+        <p>{{ note['content'][:220] }}{% if note['content']|length > 220 %}...{% endif %}</p>
+        <small>{{ note['tags'] }} · updated {{ note['updated_at'] }}</small>
+      </article>
+      {% else %}
+      <p>No notes found.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
