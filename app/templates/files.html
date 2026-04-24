@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1>Files</h1>
+    <p>Upload local files and search text-based content from the dashboard or assistant.</p>
+  </div>
+</section>
+
+<section class="grid grid-2">
+  <div class="card">
+    <h2>Upload file</h2>
+    <form method="post" enctype="multipart/form-data" class="stack">
+      <input type="file" name="file" required />
+      <button type="submit">Upload</button>
+    </form>
+    <p class="muted">Text and code files are indexed for search automatically.</p>
+  </div>
+
+  <div class="card">
+    <form method="get" action="/files" class="search-row compact-gap">
+      <input type="text" name="q" value="{{ q }}" placeholder="Search uploaded files" />
+      <button type="submit">Search</button>
+    </form>
+    <div class="stack list-stack top-gap">
+      {% for item in files %}
+      <article class="list-item">
+        <div class="section-title">
+          <strong>{{ item['original_name'] }}</strong>
+          <div class="actions tiny-actions">
+            <a href="/files/{{ item['id'] }}/download">Download</a>
+            <form action="/files/{{ item['id'] }}/delete" method="post" class="inline-form">
+              <button type="submit" class="ghost danger">Delete</button>
+            </form>
+          </div>
+        </div>
+        <p>{{ item['content_type'] }} · {{ item['size_bytes'] }} bytes</p>
+        {% if item['extracted_text'] %}
+          <small>{{ item['extracted_text'][:180] }}{% if item['extracted_text']|length > 180 %}...{% endif %}</small>
+        {% else %}
+          <small>Stored without text extraction.</small>
+        {% endif %}
+      </article>
+      {% else %}
+      <p>No files found.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
