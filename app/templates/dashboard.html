@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <h1>Welcome, {{ current_user['full_name'] }}</h1>
+    <p>Your workspace overview, search, and recent activity in one place.</p>
+  </div>
+</section>
+
+<section class="card">
+  <form method="get" action="/dashboard" class="search-row">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search notes, tasks, or uploaded files" />
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+{% if q %}
+<section class="grid grid-3">
+  <div class="card">
+    <h2>Notes</h2>
+    {% for item in search_results.notes %}
+      <div class="list-item">
+        <strong>{{ item.title }}</strong>
+        <p>{{ item.content[:120] }}{% if item.content|length > 120 %}...{% endif %}</p>
+      </div>
+    {% else %}
+      <p>No matching notes.</p>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <h2>Tasks</h2>
+    {% for item in search_results.tasks %}
+      <div class="list-item">
+        <strong>{{ item.title }}</strong>
+        <p>{{ item.status }} · {{ item.priority }}</p>
+      </div>
+    {% else %}
+      <p>No matching tasks.</p>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <h2>Files</h2>
+    {% for item in search_results.files %}
+      <div class="list-item">
+        <strong>{{ item.original_name }}</strong>
+        <p>{{ item.content_type }}</p>
+      </div>
+    {% else %}
+      <p>No matching files.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="grid grid-2">
+  <div class="card">
+    <div class="section-title">
+      <h2>Recent notes</h2>
+      <a href="/notes">View all</a>
+    </div>
+    {% for note in notes %}
+      <div class="list-item">
+        <strong>{{ note['title'] }}</strong>
+        <p>{{ note['content'][:140] }}{% if note['content']|length > 140 %}...{% endif %}</p>
+      </div>
+    {% else %}
+      <p>No notes yet.</p>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="section-title">
+      <h2>Upcoming tasks</h2>
+      <a href="/tasks">View all</a>
+    </div>
+    {% for task in tasks %}
+      <div class="list-item">
+        <strong>{{ task['title'] }}</strong>
+        <p>{{ task['status'] }} · {{ task['priority'] }}{% if task['due_date'] %} · due {{ task['due_date'] }}{% endif %}</p>
+      </div>
+    {% else %}
+      <p>No tasks yet.</p>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="section-title">
+      <h2>Uploaded files</h2>
+      <a href="/files">Manage files</a>
+    </div>
+    {% for item in files %}
+      <div class="list-item">
+        <strong>{{ item['original_name'] }}</strong>
+        <p>{{ item['content_type'] }} · {{ item['size_bytes'] }} bytes</p>
+      </div>
+    {% else %}
+      <p>No files yet.</p>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="section-title">
+      <h2>Recent activity</h2>
+      <a href="/assistant">Open assistant</a>
+    </div>
+    {% for entry in activity %}
+      <div class="list-item">
+        <strong>{{ entry['action'] }}</strong>
+        <p>{{ entry['details'] }} · {{ entry['created_at'] }}</p>
+      </div>
+    {% else %}
+      <p>No activity recorded yet.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
